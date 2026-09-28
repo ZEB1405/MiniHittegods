@@ -1,0 +1,6 @@
+@MiniHittegods.Api_HostAddress = http://localhost:5208
+
+GET {{MiniHittegods.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
