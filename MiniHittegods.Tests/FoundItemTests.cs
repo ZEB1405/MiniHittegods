@@ -1,5 +1,6 @@
 using MiniHittegods.Domain;
 using FluentAssertions;
+using MiniHittegods.Application;
 
 namespace MiniHittegods.Tests;
 
@@ -192,4 +193,26 @@ public class FoundItemTests
         // Assert
         act.Should().Throw<InvalidOperationException>()
         .WithMessage("Item is not claimed.");
-}   }
+    }
+
+    [Fact]
+    public async Task ClaimedItemCanNotBeDeleted()
+    {
+        //Arrange
+        var item = new FoundItem("Lost Wallet", "Station");
+        item.Claim("John Doe");
+
+        var repository = new FakeFoundItemRepository();
+        await repository.AddAsync(item);
+
+        var service = new FoundItemService(repository);
+
+        //Act
+        Func<Task> act = () => service.DeleteItemAsync(item.Id);
+
+        //Assert
+        await act.Should()
+            .ThrowAsync<InvalidOperationException>()
+            .WithMessage("Claimed item cannot be deleted.");
+    }
+}  

@@ -1,5 +1,4 @@
-//Application service needs to call this in order to remove an item
-namespace MiniHittegods.Domain.interfaces;
+namespace MiniHittegods.Domain.Interfaces;
 
 
 public interface IFoundItemRepository

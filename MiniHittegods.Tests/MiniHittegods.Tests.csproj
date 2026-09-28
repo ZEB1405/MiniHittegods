@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MiniHittegods.Domain\MiniHittegods.Domain.csproj" />
     <ProjectReference Include="..\MiniHittegods.Api\MiniHittegods.Api.csproj" />
+    <ProjectReference Include="..\MiniHittegods.Application\MiniHittegods.Application.csproj" />
   </ItemGroup>
 
 </Project>
