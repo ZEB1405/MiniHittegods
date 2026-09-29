@@ -2,5 +2,6 @@
   <Project Path="MiniHittegods.Api/MiniHittegods.Api.csproj" />
   <Project Path="MiniHittegods.Application/MiniHittegods.Application.csproj" />
   <Project Path="MiniHittegods.Domain/MiniHittegods.Domain.csproj" />
+  <Project Path="MiniHittegods.Infrastructure/MiniHittegods.Infrastructure.csproj" />
   <Project Path="MiniHittegods.Tests/MiniHittegods.Tests.csproj" />
 </Solution>

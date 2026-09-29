@@ -16,7 +16,7 @@ public class FoundItem
     {
         if (Status != FoundItemStatus.Available)
         {
-            throw new InvalidOperationException("Item is already claimed.");
+            throw new InvalidOperationException("Item is not available for claiming.");
         }
         ClaimedBy = claimedBy;
         ClaimedAtUtc = DateTime.UtcNow;

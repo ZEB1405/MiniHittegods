@@ -1,0 +1,2 @@
+### Get item by ID async
+GET https://localhost:7000/api/items/00000000-0000-0000-0000-000000000000

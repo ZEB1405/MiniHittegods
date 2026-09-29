@@ -24,6 +24,7 @@ public class FakeFoundItemRepository : IFoundItemRepository
         return Task.FromResult(_items.FirstOrDefault(item => item.Id == id));
     }
 
+    public bool UpdateCalled { get; private set; }
     public Task UpdateAsync(FoundItem item)
     {
         var existingItem = _items.FirstOrDefault(i => i.Id == item.Id);
@@ -32,6 +33,7 @@ public class FakeFoundItemRepository : IFoundItemRepository
             _items.Remove(existingItem);
             _items.Add(item);
         }
+        UpdateCalled = true;
         return Task.CompletedTask;
     }
 }

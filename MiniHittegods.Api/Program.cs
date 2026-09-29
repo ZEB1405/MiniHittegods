@@ -1,8 +1,12 @@
+using MiniHittegods.Application;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+//register FoundItemService with DI container as scoped lifetime
+builder.Services.AddScoped<FoundItemService>();
 
 var app = builder.Build();
 

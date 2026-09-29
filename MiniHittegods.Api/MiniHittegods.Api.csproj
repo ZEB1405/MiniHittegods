@@ -20,4 +20,8 @@
     <ProjectReference Include="..\MiniHittegods.Domain\MiniHittegods.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MiniHittegods.Application\MiniHittegods.Application.csproj" />
+  </ItemGroup>
+
 </Project>

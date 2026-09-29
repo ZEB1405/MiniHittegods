@@ -161,7 +161,7 @@ public class FoundItemTests
 
         //Assert
         act.Should().Throw<InvalidOperationException>()
-        .WithMessage("Item is already claimed.");
+        .WithMessage("Item is not available for claiming.");
     }
 
     [Fact]
@@ -214,5 +214,185 @@ public class FoundItemTests
         await act.Should()
             .ThrowAsync<InvalidOperationException>()
             .WithMessage("Claimed item cannot be deleted.");
+    }
+
+    [Fact]
+    public async Task AvailableItemCanBeDeleted()
+    {
+        //Arrange
+        var item = new FoundItem("Lost Wallet", "Station");
+
+        var repository = new FakeFoundItemRepository();
+        await repository.AddAsync(item);
+
+        var service = new FoundItemService(repository);
+
+        //Act
+        Func<Task> act = () => service.DeleteItemAsync(item.Id);
+
+        //Assert
+        await act.Should().NotThrowAsync();
+        var deletedItem = await repository.GetByIdAsync(item.Id);
+        deletedItem.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task NonExistentItemCannotBeDeleted()
+    {
+        //Arrange
+        var repository = new FakeFoundItemRepository();
+        var service = new FoundItemService(repository);
+        var nonExistentId = Guid.NewGuid();
+
+        //Act
+        Func<Task> act = () => service.DeleteItemAsync(nonExistentId);
+
+        //Assert
+        await act.Should()
+            .ThrowAsync<ArgumentException>()
+            .WithMessage("Item not found.");
+    }
+
+    [Fact]
+    public async Task ClaimItemShouldSetStatusAndClaimedByAndClaimedAtUtc()
+    {
+        //Arrange
+        var item = new FoundItem("Lost Wallet", "Station");
+
+        var repository = new FakeFoundItemRepository();
+        await repository.AddAsync(item);
+
+        var service = new FoundItemService(repository);
+
+        //Act
+        await service.ClaimItemAsync(item.Id, "John Doe");
+
+        //Assert
+        var claimedItem = await repository.GetByIdAsync(item.Id);
+        claimedItem.Should().NotBeNull();
+        claimedItem!.Status.Should().Be(FoundItemStatus.Claimed);
+        claimedItem.ClaimedBy.Should().Be("John Doe");
+        claimedItem.ClaimedAtUtc.Should().NotBeNull();
+        repository.UpdateCalled.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task AvailableItemCannotBeReturned()
+    {
+        //Arrange
+        var item = new FoundItem("Lost Wallet", "Station");
+
+        var repository = new FakeFoundItemRepository();
+        await repository.AddAsync(item);
+        var service = new FoundItemService(repository);
+
+        //Act
+        Func<Task> act = () => service.ReturnItemAsync(item.Id);
+        
+
+        //Assert
+        await act.Should()
+            .ThrowAsync<InvalidOperationException>()
+            .WithMessage("Item is not claimed.");
+
+        var returnedItem = await repository.GetByIdAsync(item.Id);
+        returnedItem.Should().NotBeNull();
+        returnedItem!.ReturnedAtUtc.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task ServiceCanReturnClaimedItem()
+    {
+        //Arrange
+        var item = new FoundItem("Lost Wallet", "Station");
+        item.Claim("John Doe");
+
+        var repository = new FakeFoundItemRepository();
+        await repository.AddAsync(item);
+        var service = new FoundItemService(repository);
+
+        //Act
+        await service.ReturnItemAsync(item.Id);
+
+        //Assert
+        var returnedItem = await repository.GetByIdAsync(item.Id);
+        returnedItem.Should().NotBeNull();
+        returnedItem!.Status.Should().Be(FoundItemStatus.Returned);
+        returnedItem.ReturnedAtUtc.Should().NotBeNull();
+        repository.UpdateCalled.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task NonExistentItemCannotBeClaimed()
+    {
+        //Arrange
+        var repository = new FakeFoundItemRepository();
+        var service = new FoundItemService(repository);
+        var nonExistentId = Guid.NewGuid();
+
+        //Act
+        Func<Task> act = () => service.ClaimItemAsync(nonExistentId, "John Doe");
+
+        //Assert
+        await act.Should()
+            .ThrowAsync<ArgumentException>()
+            .WithMessage("Item not found.");
+    }
+
+    [Fact]
+    public async Task AlreadyClaimedItemCannotBeClaimedAgain()
+    {
+        //Arrange
+        var item = new FoundItem("Lost Wallet", "Station");
+        item.Claim("John Doe");
+
+        var repository = new FakeFoundItemRepository();
+        await repository.AddAsync(item);
+        var service = new FoundItemService(repository);
+
+        //Act
+        Func<Task> act = () => service.ClaimItemAsync(item.Id, "Jane Doe");
+
+        //Assert
+        await act.Should()
+            .ThrowAsync<InvalidOperationException>()
+            .WithMessage("Item is not available for claiming.");
+    }
+
+    [Fact]
+    public async Task ReturnedItemCannotBeClaimedAgain()
+    {
+        //Arrange
+        var item = new FoundItem("Lost Wallet", "Station");
+        item.Claim("John Doe");
+        item.Return();
+
+        var repository = new FakeFoundItemRepository();
+        await repository.AddAsync(item);
+        var service = new FoundItemService(repository);
+
+        //Act
+        Func<Task> act = () => service.ClaimItemAsync(item.Id, "Jane Doe");
+
+        //Assert
+        await act.Should()
+            .ThrowAsync<InvalidOperationException>()
+            .WithMessage("Item is not available for claiming.");
+    }
+
+    [Fact]
+    public void ReturnedItemCannotBeClaimed()
+    {
+        //Arrange
+        var item = new FoundItem("Lost Wallet", "Station");
+        item.Claim("John Doe");
+        item.Return();
+
+        //Act
+        Action act = () => item.Claim("Jane Doe");
+
+        //Assert
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("Item is not available for claiming.");
     }
 }  
