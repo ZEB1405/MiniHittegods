@@ -68,4 +68,13 @@ public class FoundItemService
         }
         return item;
     }
+
+    public async Task<FoundItem> CreateItemAsync(
+    string title,
+    string foundLocation)
+    {
+        var item = new FoundItem(title, foundLocation);
+        await _repository.AddAsync(item);
+        return item;
+    }
 }

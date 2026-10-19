@@ -3,15 +3,16 @@ namespace MiniHittegods.Domain;
 public class FoundItem
 {
     public FoundItemStatus Status { get; private set; } = FoundItemStatus.Available;
-    public string Title { get; }
+    public string Title { get; private set; } = null!;
     public string? Description { get;}
     public string? Category { get; }
-    public string FoundLocation { get; }
+    public string FoundLocation { get; private set; } = null!;
     public DateTime FoundAtUtc { get; }
     public Guid Id { get; } = Guid.NewGuid();
     public string? ClaimedBy { get; private set; }
     public DateTime? ClaimedAtUtc { get; private set; }
     public DateTime? ReturnedAtUtc { get; private set; }
+    private FoundItem() { }
     public void Claim(string claimedBy)
     {
         if (Status != FoundItemStatus.Available)

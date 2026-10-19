@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MiniHittegods.Application;
+using MiniHittegods.Api.Models;
 
 namespace MiniHittegods.Api.Controllers;
 
@@ -25,6 +26,24 @@ public class ItemsController : ControllerBase
         catch (ArgumentException ex)
         {
             return NotFound(ex.Message);
+        }
+    }
+
+    [HttpPost]
+public async Task<IActionResult> CreateItem(
+    [FromBody] CreateItemRequest request)
+    {
+        try
+        {
+            var item = await _foundItemService.CreateItemAsync(
+                request.Title,
+                request.FoundLocation);
+
+            return Created($"/api/items/{item.Id}", item);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
         }
     }
 }
