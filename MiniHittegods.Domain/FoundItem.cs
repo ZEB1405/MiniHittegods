@@ -4,11 +4,11 @@ public class FoundItem
 {
     public FoundItemStatus Status { get; private set; } = FoundItemStatus.Available;
     public string Title { get; private set; } = null!;
-    public string? Description { get;}
-    public string? Category { get; }
+    public string? Description { get; private set;}
+    public string? Category { get; private set;}
     public string FoundLocation { get; private set; } = null!;
-    public DateTime FoundAtUtc { get; }
-    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime FoundAtUtc { get; private set; }
+    public Guid Id { get; private set; } = Guid.NewGuid();
     public string? ClaimedBy { get; private set; }
     public DateTime? ClaimedAtUtc { get; private set; }
     public DateTime? ReturnedAtUtc { get; private set; }
@@ -33,7 +33,7 @@ public class FoundItem
         Status = FoundItemStatus.Returned;
     }
 
-    public FoundItem(string title, string foundLocation)
+    public FoundItem(string title, string foundLocation, string? description = null, string? category = null)
     {
         if (string.IsNullOrWhiteSpace(title))
         {
@@ -52,5 +52,7 @@ public class FoundItem
         Title = title;
         FoundLocation = foundLocation;
         FoundAtUtc = DateTime.UtcNow;
+        Description = description;
+        Category = category;
     }
 }

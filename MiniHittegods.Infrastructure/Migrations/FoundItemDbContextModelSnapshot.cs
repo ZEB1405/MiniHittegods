@@ -28,11 +28,22 @@ namespace MiniHittegods.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Category")
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("ClaimedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ClaimedBy")
                         .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("FoundAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("FoundLocation")
                         .IsRequired()

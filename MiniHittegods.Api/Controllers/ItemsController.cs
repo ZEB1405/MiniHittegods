@@ -30,14 +30,16 @@ public class ItemsController : ControllerBase
     }
 
     [HttpPost]
-public async Task<IActionResult> CreateItem(
+    public async Task<IActionResult> CreateItem(
     [FromBody] CreateItemRequest request)
     {
         try
         {
             var item = await _foundItemService.CreateItemAsync(
                 request.Title,
-                request.FoundLocation);
+                request.FoundLocation,
+                request.Description,
+                request.Category);
 
             return Created($"/api/items/{item.Id}", item);
         }
@@ -45,5 +47,12 @@ public async Task<IActionResult> CreateItem(
         {
             return BadRequest(ex.Message);
         }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllItems()
+    {
+        var items = await _foundItemService.GetAllItemsAsync();
+        return Ok(items);
     }
 }

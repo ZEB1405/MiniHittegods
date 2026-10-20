@@ -8,7 +8,11 @@ public class FoundItemDbContext : DbContext
     {
         modelBuilder.Entity<FoundItem>()
             .HasKey(item => item.Id);
-
+        
+        modelBuilder.Entity<FoundItem>()
+            .Property(item => item.FoundAtUtc)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+    
         base.OnModelCreating(modelBuilder);
     }
     public DbSet<FoundItem> FoundItems => Set<FoundItem>();

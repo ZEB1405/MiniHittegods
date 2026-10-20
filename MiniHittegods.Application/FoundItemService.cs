@@ -71,10 +71,17 @@ public class FoundItemService
 
     public async Task<FoundItem> CreateItemAsync(
     string title,
-    string foundLocation)
+    string foundLocation,
+    string? description = null,
+    string? category = null)
     {
-        var item = new FoundItem(title, foundLocation);
+        var item = new FoundItem(title, foundLocation, description, category);
         await _repository.AddAsync(item);
         return item;
+    }
+
+    public async Task<IReadOnlyList<FoundItem>> GetAllItemsAsync()
+    {
+        return await _repository.GetAllAsync();
     }
 }

@@ -36,4 +36,9 @@ public class FakeFoundItemRepository : IFoundItemRepository
         UpdateCalled = true;
         return Task.CompletedTask;
     }
+
+    public Task<IReadOnlyList<FoundItem>> GetAllAsync()
+    {
+        return Task.FromResult<IReadOnlyList<FoundItem>>(_items);
+    }
 }

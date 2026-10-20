@@ -32,4 +32,8 @@ public class FoundItemRepository : IFoundItemRepository
         _context.FoundItems.Remove(item);
         await _context.SaveChangesAsync();
     }
+    public async Task<IReadOnlyList<FoundItem>> GetAllAsync()
+    {
+        return await _context.FoundItems.ToListAsync();
+    }
 }
