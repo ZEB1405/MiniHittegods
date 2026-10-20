@@ -395,4 +395,26 @@ public class FoundItemTests
         act.Should().Throw<InvalidOperationException>()
             .WithMessage("Item is not available for claiming.");
     }
+
+    [Fact]
+    public async Task GetAllItemsCanFilterByStatus()
+    {
+        //Arrange
+        var availableItem = new FoundItem("Lost Wallet", "Station");
+        var claimedItem = new FoundItem("Lost Phone", "Park");
+        claimedItem.Claim("John Doe");
+
+        var repository = new FakeFoundItemRepository();
+        await repository.AddAsync(availableItem);
+        await repository.AddAsync(claimedItem);
+
+        var service = new FoundItemService(repository);
+
+        //Act
+        var items = await service.GetAllItemsAsync(FoundItemStatus.Available);
+
+        //Assert
+        items.Should().ContainSingle();
+        items[0].Title.Should().Be("Lost Wallet");
+    }
 }  

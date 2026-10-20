@@ -80,8 +80,13 @@ public class FoundItemService
         return item;
     }
 
-    public async Task<IReadOnlyList<FoundItem>> GetAllItemsAsync()
+    public async Task<IReadOnlyList<FoundItem>> GetAllItemsAsync(FoundItemStatus? status = null)
     {
-        return await _repository.GetAllAsync();
+        var items = await _repository.GetAllAsync();
+        if (status.HasValue)
+        {
+            items = items.Where(item => item.Status == status.Value).ToList();
+        }
+        return items;
     }
 }
