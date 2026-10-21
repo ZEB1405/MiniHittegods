@@ -417,4 +417,50 @@ public class FoundItemTests
         items.Should().ContainSingle();
         items[0].Title.Should().Be("Lost Wallet");
     }
+
+    [Fact]
+    public async Task GetAllItemsCanFilterByCategory()
+    {
+        //Arrange
+        var phone = new FoundItem("Lost Phone", "Park", category: "Electronics");
+        var jacket = new FoundItem("Lost Jacket", "Store", category: "Clothing");
+
+        var repository = new FakeFoundItemRepository();
+        await repository.AddAsync(phone);
+        await repository.AddAsync(jacket);
+
+        var service = new FoundItemService(repository);
+
+        //Act
+        var items = await service.GetAllItemsAsync(category: "Electronics");
+
+        //Assert
+        items.Should().ContainSingle();
+        items[0].Title.Should().Be("Lost Phone");
+    }
+
+    [Fact]
+    public async Task GetAllItemsCanSearchByStatusAndDescription()
+    {
+        //Arrange
+        var titleMatch = new FoundItem("Lost Wallet", "Station");
+        var descriptionMatch = new FoundItem("Lost Item", "Park", description: "Black leather wallet");
+
+        var unrelated = new FoundItem("Lost Keys", "Library");
+
+        var repository = new FakeFoundItemRepository();
+        await repository.AddAsync(titleMatch);
+        await repository.AddAsync(descriptionMatch);
+        await repository.AddAsync(unrelated);
+
+        var service = new FoundItemService(repository);
+
+        //Act
+        var items = await service.GetAllItemsAsync(q: "wallet");
+
+        //Assert
+        items.Should().HaveCount(2);
+        items.Should().Contain(i => i.Title == "Lost Wallet");
+        items.Should().Contain(i => i.Title == "Lost Item");
+    }
 }  

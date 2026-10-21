@@ -80,12 +80,20 @@ public class FoundItemService
         return item;
     }
 
-    public async Task<IReadOnlyList<FoundItem>> GetAllItemsAsync(FoundItemStatus? status = null)
+    public async Task<IReadOnlyList<FoundItem>> GetAllItemsAsync(FoundItemStatus? status = null, string? category = null, string? q = null)
     {
         var items = await _repository.GetAllAsync();
         if (status.HasValue)
         {
             items = items.Where(item => item.Status == status.Value).ToList();
+        }
+        if (!string.IsNullOrWhiteSpace(category))
+        {
+            items = items.Where(item => item.Category?.Equals(category, StringComparison.OrdinalIgnoreCase) ?? false).ToList();
+        }
+        if (!string.IsNullOrWhiteSpace(q))
+        {
+            items = items.Where(item => item.Title.Contains(q, StringComparison.OrdinalIgnoreCase) || item.Description?.Contains(q, StringComparison.OrdinalIgnoreCase) == true).ToList();
         }
         return items;
     }
