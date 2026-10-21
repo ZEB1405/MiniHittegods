@@ -7,5 +7,9 @@ public interface IFoundItemRepository
     Task AddAsync(FoundItem item);
     Task UpdateAsync(FoundItem item);
     Task DeleteAsync(FoundItem item);
-    Task<IReadOnlyList<FoundItem>> GetAllAsync();
+    Task<IReadOnlyList<FoundItem>> GetAllAsync(
+        FoundItemStatus? status = null,
+        string? category = null,
+        string? q = null
+    );
 }

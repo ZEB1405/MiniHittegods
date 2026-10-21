@@ -32,8 +32,35 @@ public class FoundItemRepository : IFoundItemRepository
         _context.FoundItems.Remove(item);
         await _context.SaveChangesAsync();
     }
-    public async Task<IReadOnlyList<FoundItem>> GetAllAsync()
+    public async Task<IReadOnlyList<FoundItem>> GetAllAsync(
+    FoundItemStatus? status = null,
+    string? category = null,
+    string? q = null)
     {
-        return await _context.FoundItems.ToListAsync();
+        var query = _context.FoundItems.AsQueryable();
+
+        if (status.HasValue)
+        {
+            query = query.Where(item => item.Status == status.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(category))
+        {
+            query = query.Where(item =>
+                item.Category != null &&
+                item.Category.ToLower() == category.ToLower());
+        }
+
+        if (!string.IsNullOrWhiteSpace(q))
+        {
+            var searchTerm = q.ToLower();
+
+            query = query.Where(item =>
+                item.Title.ToLower().Contains(searchTerm) ||
+                (item.Description != null &&
+                item.Description.ToLower().Contains(searchTerm)));
+        }
+
+        return await query.ToListAsync();
     }
 }

@@ -37,8 +37,35 @@ public class FakeFoundItemRepository : IFoundItemRepository
         return Task.CompletedTask;
     }
 
-    public Task<IReadOnlyList<FoundItem>> GetAllAsync()
+    public Task<IReadOnlyList<FoundItem>> GetAllAsync(
+    FoundItemStatus? status = null,
+    string? category = null,
+    string? q = null)
     {
-        return Task.FromResult<IReadOnlyList<FoundItem>>(_items);
+        IEnumerable<FoundItem> query = _items;
+
+        if (status.HasValue)
+        {
+            query = query.Where(item => item.Status == status.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(category))
+        {
+            query = query.Where(item =>
+                item.Category?.Equals(
+                    category,
+                    StringComparison.OrdinalIgnoreCase) == true);
+        }
+
+        if (!string.IsNullOrWhiteSpace(q))
+        {
+            query = query.Where(item =>
+                item.Title.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                item.Description?.Contains(
+                    q,
+                    StringComparison.OrdinalIgnoreCase) == true);
+        }
+
+        return Task.FromResult<IReadOnlyList<FoundItem>>(query.ToList());
     }
 }
