@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MiniHittegods.Application;
 using MiniHittegods.Api.Models;
+using MiniHittegods.Domain;
 
 namespace MiniHittegods.Api.Controllers;
 
@@ -50,9 +51,17 @@ public class ItemsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllItems()
+    public async Task<IActionResult> GetAllItems(
+        [FromQuery] FoundItemStatus? status = null,
+        [FromQuery] string? category = null,
+        [FromQuery] string? q = null)
+    
     {
-        var items = await _foundItemService.GetAllItemsAsync();
+        var items = await _foundItemService.GetAllItemsAsync(
+            status,
+            category,
+            q
+        );
         return Ok(items);
     }
 }
